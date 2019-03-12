@@ -1,15 +1,26 @@
 from params import Parameters
 from pub.publication import Publication
-# import sub.subscription
-# from test.foo import Foo
-#from import_file import import_file
+from sub.subscription import Subscription
+
+# >>> from colorama import Fore, Back, Style
+# >>> print(Fore.RED + 'some red text')
+# some red text
+# >>> print(Back.GREEN + 'and with a green background')
+
 
 pm = Parameters('pg-foo.yaml')
 
-print(pm.publication.database.name)
-
 # syncPub = SyncPublication(pm.publication)
 # syncPub.exec()
-publication = Publication()
-publication.exec(pm.publication)
+publication = Publication(pm.publication)
+publication.run()
 
+print('ADD')
+print(publication.commands_add)
+
+print('CHANGE')
+print(publication.commands_change)
+
+
+subscription = Subscription(pm)
+subscription.run()
