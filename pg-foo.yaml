@@ -1,0 +1,22 @@
+publication:
+  name: publication_foo
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  database:
+    name: db_main
+    owner:
+      user: usr_publication
+    tables:
+      - public.users
+      - public.cities
+
+subscription:
+  name: subscription_foo
+  host: localhost                
+  port: 5432
+  user: postgres                
+  password: postgres
+  database: app_destination
+  schema: public
