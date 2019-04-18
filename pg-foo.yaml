@@ -1,22 +1,27 @@
 publication:
+  connection:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+    database: db1
   name: publication_foo
-  host: localhost
-  port: 5432
-  user: postgres
-  password: postgres
-  database:
-    name: db_main
-    owner:
-      user: usr_publication
-    tables:
-      - public.users
-      - public.cities
+  slot_name: ifood_test_hooo
+  owner:
+    user: user_publication
+  tables:
+    - public.t
+    - public.t2
+    - public.t3
+    - public.t4
 
 subscription:
+  connection:
+    host: localhost                
+    port: 5432
+    user: postgres                
+    password: postgres
+    database: db2
   name: subscription_foo
-  host: localhost                
-  port: 5432
-  user: postgres                
-  password: postgres
-  database: app_destination
-  schema: public
+  owner:
+      user: user_subscription

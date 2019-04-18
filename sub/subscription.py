@@ -1,58 +1,58 @@
 import psycopg2
 import psycopg2.extras
 from psycopg2 import sql
+from lib.slot import Slot
 
 class Subscription:
     
-    def __init__(self, replication):
+    def __init__(self, replication, connection, publication_has_any_changes):
         self.replication = replication
         self.subscription = replication.subscription
+        self.cursor = connection.cursor()
+        self.publication_has_any_changes = publication_has_any_changes
+        self.commands_add = []
+        self.commands_change = []
+        self.commands_remove = []
 
-    def connect_pg(self): 
-        conn_string = ("host='%s' dbname='%s' user='%s' password='%s'" % (self.subscription.host, self.subscription.database.name, self.subscription.user, self.subscription.password))
-            
-        print("Connecting to database\n	->%s" % (conn_string))
-        connection = psycopg2.connect(conn_string)
-        return connection.cursor()
-
-    def exists_subscription(self, cursor):
+    def exists_subscription(self):
         query = sql.SQL("select * from pg_subscription where subname = {} ").format(
-        sql.Literal(self.subscription.name))
+            sql.Literal(self.subscription.name))
 
-        cursor.execute(query)
-        return len(cursor.fetchall()) > 1
+        self.cursor.execute(query)
+        return len(self.cursor.fetchall()) >= 1
 
-    def create_subscription(self, cursor):
-        query = sql.SQL('CREATE SUBSCRIPTION {} ' +
-                        "CONNECTION 'host={} port={} user={} dbname={}" +
-                        'PUBLICATION = {}' +
-                        "WITH(slot_name = {}, create_slot = false)"
+    def create_subscription(self):
+        query = sql.SQL('CREATE SUBSCRIPTION {} \n' +
+                        "   CONNECTION 'host={} port={} user={} dbname={}'\n" +
+                        '   PUBLICATION {} \n' +
+                        "   WITH(slot_name = {}, create_slot = false);"
                 ).format(
-                    sql.Literal(self.replication.subscription.name),
-                    sql.Literal(self.replication.subscription.host),
-                    sql.Literal(self.replication.subscription.user),
-                    sql.Literal(self.replication.subscription.database),
-                    sql.Literal(self.replication.publication.name),
-                    sql.Literal('slot_test'))
+                    sql.Identifier(self.subscription.name),
+                    sql.SQL(self.replication.publication.connection.host),
+                    sql.Literal(self.replication.publication.connection.port),
+                    sql.SQL(self.replication.publication.connection.user),
+                    sql.SQL(self.replication.publication.connection.database),
+                    sql.Identifier(self.replication.publication.name),
+                    sql.Identifier(self.replication.publication.slot_name)).as_string(self.cursor)
 
-        cursor.execute(query)
-        self.refresh_subscription(cursor, self.replication.subscription)
+        self.commands_add.append(query)
+        self.refresh_subscription()
 
-    def refresh_subscription(self, cursor):
-        query = sql.SQL('ALTER SUBSCRIPTION {} REFRESH PUBLICATION').format(sql.Literal(self.subscription.name))
-        cursor.execute(query)
+    def refresh_subscription(self):
+        query = sql.SQL('ALTER SUBSCRIPTION {} REFRESH PUBLICATION;').format(sql.Identifier(self.subscription.name)).as_string(self.cursor)
+        self.commands_add.append(query)
+
+    def change_subscription(self):
+        print("Not implemented")
+
+    def has_any_changes(self):
+        return len(self.commands_add) > 0 or len(self.commands_change) > 0
 
     def run(self):
-        replication = self.replication
-        print("INICIANDO atualização do subscription")
-
-        subscription = replication.subscription
-        cursor = self.connect_pg(subscription)
-
         if self.exists_subscription():
-            self.refresh_subscription(cursor)
+            if self.publication_has_any_changes:
+                self.refresh_subscription()
         else:
-            self.create_subscription(cursor)
+            self.create_subscription()
 
-        print("FINALIZADO atualização do subscription")
 

@@ -1,38 +1,36 @@
 import yaml
 
-class Publication:
-
+class Connection:
     def __init__(self, rdict):
-        self.name = rdict['name']
+        self.database = rdict['database']
         self.host = rdict['host']
         self.port = rdict['port']
         self.user = rdict['user']
         self.password = rdict['password']
-        self.database = DatabasePublication(rdict['database'])
 
+class Publication:
 
-class DatabasePublication:
     def __init__(self, rdict):
+        self.connection = Connection(rdict['connection'])
         self.name = rdict['name']
-        self.tables = rdict['tables']
+        self.slot_name = rdict['slot_name']
         self.owner = OwnerPublication(rdict['owner'])
-
+        self.tables = rdict['tables']
 
 class OwnerPublication:
     def __init__(self, rdict):
-        self.owner = rdict['user']
-
+        self.user = rdict['user']
 
 class Subscription:
 
     def __init__(self, rdict):
+        self.connection = Connection(rdict['connection'])
         self.name = rdict['name']
-        self.host = rdict['host']
-        self.port = rdict['port']
-        self.user = rdict['user']
-        self.user = rdict['password']
-        self.user = rdict['database']
-        self.user = rdict['schema']
+        self.owner = OwnerSubscription(rdict['owner'])
+
+class OwnerSubscription:
+    def __init__(self, rdict):
+        self.owner = rdict['user']
 
 class Parameters:
 
