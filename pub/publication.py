@@ -72,7 +72,7 @@ class Publication:
         return ("SET ROLE '%s';" % self.publication.owner.user)
 
     def has_any_changes(self):
-        len(self.commands_add) > 0 or len(self.commands_change) > 0
+        return len(self.commands_add) > 0 or len(self.commands_change) > 0
 
     def run(self):
         if self.valid_exists_publication_with_name():

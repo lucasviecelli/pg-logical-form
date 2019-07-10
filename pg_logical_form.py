@@ -5,6 +5,8 @@ from lib.open_connection import OpenConnection
 from colorama import Fore, Back, Style
 import sys
 import lib.execute_sql as ExecuteSql
+import argparse
+
 
 def print_messages(color, commands):
     if len(commands) > 0:
@@ -15,7 +17,21 @@ def print_header(color, commands, message):
     if len(commands) > 0:
         print(color + message + "\n")
 
-pm = Parameters('pg-foo.yaml')
+
+parser = argparse.ArgumentParser(description="Get a PostgreSQL dump file and load it as parquet files on S3")
+parser.add_argument('-c', '--command', help="Set command plan or apply", required=True)
+parser.add_argument('-f', '--file', help="Path to the file to process", required=True)
+args = parser.parse_args()
+
+# print("Aqui ")
+# print(args)
+
+file = args.file
+command = args.command
+
+# print(command)
+
+pm = Parameters(args.file)
 
 conn = OpenConnection(pm.publication, pm.subscription)
 
@@ -53,8 +69,15 @@ print(Fore.RESET)
 
 changes = publication.has_any_changes() or subscription.has_any_changes()
 
+
+# print("COMMMAND")
+# print(publication.has_any_changes())
+# print(subscription.has_any_changes())
+# print(command)
+# print(changes)
+
 if changes:
-   if sys.argv[1] == 'apply':
+   if command == 'apply':
       text = input("Do you want to apply all (no, yes)? ")
 
       if text == 'yes':

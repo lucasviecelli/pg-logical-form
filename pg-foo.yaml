@@ -12,14 +12,14 @@ publication:
   tables:
     - public.t
     - public.t2
-    - public.t3
+    - public.t3    
     - public.t4
 
 subscription:
   connection:
     host: localhost                
     port: 5432
-    user: postgres                
+    user: postgres           
     password: postgres
     database: db2
   name: subscription_foo
