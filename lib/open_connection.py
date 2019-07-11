@@ -9,7 +9,7 @@ class OpenConnection:
         self.subscription = subscription
 
     def connect_pg(self, connection):
-        conn_string = ("host='%s' dbname='%s' user='%s' password='%s'" % (connection.host, connection.database, connection.user, connection.password))
+        conn_string = ("host='%s' dbname='%s' port='%s' user='%s'" % (connection.host, connection.database, connection.port, connection.user))
         return psycopg2.connect(conn_string)
 
     def get_connection_pub(self):

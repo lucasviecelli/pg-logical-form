@@ -6,7 +6,7 @@ class Connection:
         self.host = rdict['host']
         self.port = rdict['port']
         self.user = rdict['user']
-        self.password = rdict['password']
+        # self.password = rdict['password']
 
 class Publication:
 
