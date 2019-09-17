@@ -57,7 +57,7 @@ class Publication:
         self.commands_add.append(self.set_role())
 
         string_tables = '   ' + (',\n      '.join(self.publication.tables))
-        self.commands_add.append(("CREATE PUBLICATION %s \n" +
+        self.commands_add.append(("CREATE PUBLICATION \"%s\" \n" +
                                   "   FOR TABLE \n" +
                                   "   %s;") % (self.publication.name, string_tables))
 

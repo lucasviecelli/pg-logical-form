@@ -22,6 +22,8 @@ class Subscription:
         return len(self.cursor.fetchall()) >= 1
 
     def create_subscription(self):
+        self.set_role()
+
         query = sql.SQL('CREATE SUBSCRIPTION {} \n' +
                         "   CONNECTION 'host={} port={} user={} dbname={}'\n" +
                         '   PUBLICATION {} \n' +
@@ -37,6 +39,10 @@ class Subscription:
 
         self.commands_add.append(query)
         self.refresh_subscription()
+
+    def set_role(self):
+        query = sql.SQL('SET ROLE {};').format(sql.Literal(self.replication.subscription.owner.user)).as_string(self.cursor)
+        self.commands_add.append(query)
 
     def refresh_subscription(self):
         query = sql.SQL('ALTER SUBSCRIPTION {} REFRESH PUBLICATION;').format(sql.Identifier(self.subscription.name)).as_string(self.cursor)
