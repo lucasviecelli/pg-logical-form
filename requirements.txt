@@ -22,7 +22,7 @@ import-file==1.11
 iniparse==0.4
 IPy==0.81
 isc==2.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 kerberos==1.3.0
 langtable==0.0.43
 Mako==1.0.12.dev0
